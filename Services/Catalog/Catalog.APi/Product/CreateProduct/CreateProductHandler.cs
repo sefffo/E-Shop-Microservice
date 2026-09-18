@@ -28,6 +28,6 @@ public class CreateProductCommandHandler : ICommandHandler<CreateProductCommand,
         // TODO: Save entity to DB via DbContext or Repository
 
         return new CreateProductResult(Guid.NewGuid());
-    }
+    } 
     
 }

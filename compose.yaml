@@ -1,0 +1,25 @@
+﻿services:
+  catalogdb:
+    image: postgres:18.7-alpine
+    container_name: catalogdb
+    restart: always
+
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: CatalogDb
+    
+    ports:
+      - "127.0.0.1:5433:5432"
+
+    volumes:
+      - postgres_catalog:/var/lib/postgresql
+
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d CatalogDb"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  postgres_catalog:

@@ -30,4 +30,8 @@
       <ProjectReference Include="..\..\..\BuldingBlocks\Building-Blocks\Building-Blocks.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="Data\" />
+    </ItemGroup>
+
 </Project>

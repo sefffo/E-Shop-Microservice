@@ -1,5 +1,6 @@
-﻿using Building_Blocks.CQRS;
-using Microsoft.AspNetCore.Http.HttpResults;
+using Building_Blocks.SharedResponse;
+using Building_Blocks.CQRS;
+using Marten;
 
 namespace Catalog.APi.Product.CreateProduct;
 
@@ -8,13 +9,13 @@ public record CreateProductCommand(
     string Description,
     decimal Price,
     List<string> Category,
-    string ImageFile) : ICommand<CreateProductResult>;
+    string ImageFile) : ICommand<Result<CreateProductResult>>;
 
 public record CreateProductResult(Guid Id);
 
-public class CreateProductCommandHandler : ICommandHandler<CreateProductCommand, CreateProductResult>
+public class CreateProductCommandHandler(IDocumentSession session) : ICommandHandler<CreateProductCommand, Result<CreateProductResult>>
 {
-    public async Task<CreateProductResult> Handle(CreateProductCommand command, CancellationToken cancellationToken)
+    public async Task<Result<CreateProductResult>> Handle(CreateProductCommand command, CancellationToken cancellationToken)
     {
         var product = new Models.Product
         {
@@ -26,8 +27,11 @@ public class CreateProductCommandHandler : ICommandHandler<CreateProductCommand,
         };
 
         // TODO: Save entity to DB via DbContext or Repository
+        // we gonna use the marten session we don't need to use repo pattern as the marten is abstraction already itself
+        session.Store(product);
+        await session.SaveChangesAsync(cancellationToken);
 
-        return new CreateProductResult(Guid.NewGuid());
+        return new CreateProductResult(product.Id); // from the database we get the id
     } 
     
 }

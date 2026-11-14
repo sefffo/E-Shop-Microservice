@@ -1,4 +1,6 @@
+using Building_Blocks.Extensions;
 using Carter;
+using Marten;
 using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -8,10 +10,15 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddOpenApi();
 
 builder.Services.AddCarter();
-builder.Services.AddMediatR(config => { config.RegisterServicesFromAssembly(typeof(Program).Assembly); });
-
+builder.Services.AddBuildingBlocks(typeof(Program).Assembly);
+builder.Services.AddMarten(config =>
+{
+    config.Connection(builder.Configuration.GetConnectionString("CatalogDb")!);
+}).UseLightweightSessions(); // best practice for our case
 
 var app = builder.Build();
+
+app.UseExceptionHandler();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
